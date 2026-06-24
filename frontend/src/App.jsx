@@ -26,7 +26,7 @@ function App() {
     <Router>
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        <main className="flex-grow container mx-auto px-4 py-8 max-w-7xl">
+        <main className="flex-grow w-full px-4 sm:px-8 lg:px-12 py-8">
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
