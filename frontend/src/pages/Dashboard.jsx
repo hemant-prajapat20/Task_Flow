@@ -9,6 +9,7 @@ const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newBoardTitle, setNewBoardTitle] = useState('');
   const [newBoardDescription, setNewBoardDescription] = useState('');
+  const [editingBoardId, setEditingBoardId] = useState(null);
   const [error, setError] = useState('');
 
   const fetchBoards = async () => {
@@ -27,21 +28,52 @@ const Dashboard = () => {
     fetchBoards();
   }, []);
 
-  const handleCreateBoard = async (e) => {
+  const openCreateModal = () => {
+    setEditingBoardId(null);
+    setNewBoardTitle('');
+    setNewBoardDescription('');
+    setError('');
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (e, board) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingBoardId(board._id);
+    setNewBoardTitle(board.title);
+    setNewBoardDescription(board.description || '');
+    setError('');
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingBoardId(null);
+    setNewBoardTitle('');
+    setNewBoardDescription('');
+    setError('');
+  };
+
+  const handleSubmitBoard = async (e) => {
     e.preventDefault();
     if (!newBoardTitle.trim()) return;
 
     try {
-      await api.post('/boards', {
-        title: newBoardTitle,
-        description: newBoardDescription
-      });
-      setIsModalOpen(false);
-      setNewBoardTitle('');
-      setNewBoardDescription('');
+      if (editingBoardId) {
+        await api.put(`/boards/${editingBoardId}`, {
+          title: newBoardTitle,
+          description: newBoardDescription
+        });
+      } else {
+        await api.post('/boards', {
+          title: newBoardTitle,
+          description: newBoardDescription
+        });
+      }
+      closeModal();
       fetchBoards();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create board');
+      setError(err.response?.data?.message || 'Failed to save board');
     }
   };
 
@@ -74,7 +106,7 @@ const Dashboard = () => {
           <p className="text-secondary mt-1">Manage your projects and tasks</p>
         </div>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={openCreateModal}
           className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl shadow-sm hover:shadow-primary/30 hover:shadow-lg active:scale-95 transition-all duration-200"
         >
           <Plus className="h-5 w-5" />
@@ -92,7 +124,7 @@ const Dashboard = () => {
             Create your first board to start organizing your tasks and tracking your progress.
           </p>
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={openCreateModal}
             className="px-6 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors inline-flex items-center gap-2 shadow-sm"
           >
             <Plus className="h-5 w-5" />
@@ -111,13 +143,22 @@ const Dashboard = () => {
                 <div className="p-2 bg-primary/10 rounded-lg">
                   <Layout className="h-6 w-6 text-primary" />
                 </div>
-                <button
-                  onClick={(e) => handleDeleteBoard(e, board._id)}
-                  className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors opacity-0 group-hover:opacity-100"
-                  aria-label="Delete Board"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={(e) => openEditModal(e, board)}
+                    className="p-1.5 text-slate-400 hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors"
+                    aria-label="Edit Board"
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={(e) => handleDeleteBoard(e, board._id)}
+                    className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                    aria-label="Delete Board"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
               <h3 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors">{board.title}</h3>
               <p className="text-secondary text-sm line-clamp-2">
@@ -136,16 +177,16 @@ const Dashboard = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-800">
-              <h3 className="text-lg font-semibold">Create New Board</h3>
+              <h3 className="text-lg font-semibold">{editingBoardId ? 'Edit Board' : 'Create New Board'}</h3>
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={closeModal}
                 className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
             
-            <form onSubmit={handleCreateBoard} className="p-6">
+            <form onSubmit={handleSubmitBoard} className="p-6">
               {error && (
                 <div className="bg-red-50 dark:bg-red-900/30 text-red-500 p-3 rounded-lg text-sm mb-4">
                   {error}
@@ -180,7 +221,7 @@ const Dashboard = () => {
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={closeModal}
                   className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                 >
                   Cancel
@@ -189,7 +230,7 @@ const Dashboard = () => {
                   type="submit"
                   className="px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors shadow-sm"
                 >
-                  Create Board
+                  {editingBoardId ? 'Save Changes' : 'Create Board'}
                 </button>
               </div>
             </form>

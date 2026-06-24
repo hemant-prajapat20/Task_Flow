@@ -20,6 +20,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/boards', require('./routes/boardRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
+app.use('/api/search', require('./routes/searchRoutes'));
 
 // Error handler middleware
 app.use((err, req, res, next) => {
