@@ -75,7 +75,7 @@ const Dashboard = () => {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg shadow-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl shadow-sm hover:shadow-primary/30 hover:shadow-lg active:scale-95 transition-all duration-200"
         >
           <Plus className="h-5 w-5" />
           Create Board
@@ -105,7 +105,7 @@ const Dashboard = () => {
             <Link
               key={board._id}
               to={`/board/${board._id}`}
-              className="group block p-6 bg-surface-light dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-primary/50 transition-all"
+              className="group block p-6 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1.5 hover:border-primary/40 dark:hover:border-primary/40 transition-all duration-300"
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="p-2 bg-primary/10 rounded-lg">

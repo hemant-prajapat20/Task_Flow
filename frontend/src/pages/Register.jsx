@@ -34,8 +34,8 @@ const Register = () => {
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
-      <div className="w-full max-w-md bg-surface-light dark:bg-surface-dark rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-8">
-        <div className="flex flex-col items-center mb-8">
+      <div className="w-full max-w-sm bg-surface-light dark:bg-surface-dark rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-6">
+        <div className="flex flex-col items-center mb-6">
           <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
             <LayoutDashboard className="h-6 w-6 text-primary" />
           </div>
