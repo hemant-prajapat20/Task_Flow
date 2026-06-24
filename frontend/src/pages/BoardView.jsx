@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Plus, MoreVertical, Edit2, Trash2, ArrowLeft, Calendar, Clock, AlertCircle } from 'lucide-react';
+import { Plus, MoreVertical, Edit2, Trash2, ArrowLeft, Calendar, Clock, AlertCircle, Filter, ArrowUpDown } from 'lucide-react';
 import api from '../api/axios';
 import TaskModal from '../components/TaskModal';
 
@@ -26,6 +26,8 @@ const BoardView = () => {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [activeColumnId, setActiveColumnId] = useState('todo');
+  const [filterPriority, setFilterPriority] = useState('all');
+  const [sortBy, setSortBy] = useState('none');
 
   const fetchData = async () => {
     try {
@@ -147,6 +149,32 @@ const BoardView = () => {
     return dueDate < today;
   };
 
+  const getFilteredAndSortedTasks = (columnId) => {
+    let filtered = [...(tasks[columnId] || [])];
+    
+    if (filterPriority !== 'all') {
+      filtered = filtered.filter(task => task.priority === filterPriority);
+    }
+
+    if (sortBy === 'earliest') {
+      filtered.sort((a, b) => {
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return new Date(a.dueDate) - new Date(b.dueDate);
+      });
+    } else if (sortBy === 'latest') {
+      filtered.sort((a, b) => {
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return new Date(b.dueDate) - new Date(a.dueDate);
+      });
+    }
+
+    return filtered;
+  };
+
+  const isDndDisabled = filterPriority !== 'all' || sortBy !== 'none';
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -166,13 +194,44 @@ const BoardView = () => {
 
   return (
     <div className="py-2 h-[calc(100vh-6rem)] flex flex-col">
-      <div className="flex items-center gap-4 mb-6 shrink-0">
-        <Link to="/" className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
-          <ArrowLeft className="h-5 w-5" />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold">{board.title}</h1>
-          {board.description && <p className="text-secondary text-sm">{board.description}</p>}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 shrink-0">
+        <div className="flex items-center gap-4">
+          <Link to="/" className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold">{board.title}</h1>
+            {board.description && <p className="text-secondary text-sm">{board.description}</p>}
+          </div>
+        </div>
+        
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 shadow-sm">
+            <Filter className="h-4 w-4 text-slate-400" />
+            <select 
+              value={filterPriority} 
+              onChange={(e) => setFilterPriority(e.target.value)}
+              className="bg-transparent text-sm font-medium outline-none text-slate-700 dark:text-slate-200 cursor-pointer"
+            >
+              <option value="all">All Priorities</option>
+              <option value="high">High Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="low">Low Priority</option>
+            </select>
+          </div>
+          
+          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 shadow-sm">
+            <ArrowUpDown className="h-4 w-4 text-slate-400" />
+            <select 
+              value={sortBy} 
+              onChange={(e) => setSortBy(e.target.value)}
+              className="bg-transparent text-sm font-medium outline-none text-slate-700 dark:text-slate-200 cursor-pointer"
+            >
+              <option value="none">Sort: Default</option>
+              <option value="earliest">Due: Earliest First</option>
+              <option value="latest">Due: Latest First</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -205,15 +264,16 @@ const BoardView = () => {
                         snapshot.isDraggingOver ? 'bg-black/5 dark:bg-white/5' : ''
                       }`}
                     >
-                      {tasks[col.id]?.map((task, index) => (
-                        <Draggable key={task._id} draggableId={task._id} index={index}>
+                      {getFilteredAndSortedTasks(col.id).map((task, index) => (
+                        <Draggable key={task._id} draggableId={task._id} index={index} isDragDisabled={isDndDisabled}>
                           {(provided, snapshot) => (
                             <div
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
                               className={`bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 group transition-all duration-200
-                                ${snapshot.isDragging ? 'shadow-2xl scale-105 rotate-2 ring-2 ring-primary ring-offset-1 dark:ring-offset-slate-900 cursor-grabbing' : 'hover:-translate-y-0.5 hover:shadow-md hover:border-primary/30 cursor-grab'}`}
+                                ${snapshot.isDragging ? 'shadow-2xl scale-105 rotate-2 ring-2 ring-primary ring-offset-1 dark:ring-offset-slate-900 cursor-grabbing' : 'hover:-translate-y-0.5 hover:shadow-md hover:border-primary/30'}
+                                ${isDndDisabled ? 'cursor-default' : 'cursor-grab'}`}
                             >
                               <div className="flex justify-between items-start mb-2">
                                 <div className={`text-xs font-medium px-2 py-0.5 rounded uppercase tracking-wider ${priorityColors[task.priority]}`}>
