@@ -1,33 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
-import { Plus, Layout, Trash2, Edit2, X } from 'lucide-react';
+import { Plus, Layout, Trash2, Edit2, X, Search, ChevronDown, Grid, List as ListIcon, MoreVertical, Briefcase, Rocket, Lightbulb, Clock, CheckCircle2, TrendingUp, CheckSquare, Sparkles } from 'lucide-react';
 
 const Dashboard = () => {
   const [boards, setBoards] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newBoardTitle, setNewBoardTitle] = useState('');
   const [newBoardDescription, setNewBoardDescription] = useState('');
   const [editingBoardId, setEditingBoardId] = useState(null);
   const [error, setError] = useState('');
 
-  const fetchBoards = async () => {
+  const fetchDashboardData = async () => {
     try {
       setIsLoading(true);
-      const { data } = await api.get('/boards');
-      setBoards(data);
+      // Fetch boards
+      const { data: boardsData } = await api.get('/boards');
+      setBoards(boardsData);
+
+      // Fetch tasks for all boards in parallel to compute statistics locally (No backend changes!)
+      if (boardsData.length > 0) {
+        const tasksPromises = boardsData.map(board => api.get(`/tasks/board/${board._id}`));
+        const tasksResponses = await Promise.all(tasksPromises);
+        const allTasks = tasksResponses.flatMap(res => res.data);
+        setTasks(allTasks);
+      } else {
+        setTasks([]);
+      }
     } catch (err) {
-      console.error('Failed to fetch boards:', err);
+      console.error('Failed to fetch dashboard data:', err);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchBoards();
+    fetchDashboardData();
   }, []);
 
+  // Stats Calculations
+  const totalBoards = boards.length;
+  const totalTasks = tasks.length;
+  const inProgressTasks = tasks.filter(t => t.status === 'in-progress').length;
+  const completedTasks = tasks.filter(t => t.status === 'done').length;
+  const inProgressPercentage = totalTasks ? Math.round((inProgressTasks / totalTasks) * 100) : 0;
+  const completedPercentage = totalTasks ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  // Board Actions
   const openCreateModal = () => {
     setEditingBoardId(null);
     setNewBoardTitle('');
@@ -60,18 +82,12 @@ const Dashboard = () => {
 
     try {
       if (editingBoardId) {
-        await api.put(`/boards/${editingBoardId}`, {
-          title: newBoardTitle,
-          description: newBoardDescription
-        });
+        await api.put(`/boards/${editingBoardId}`, { title: newBoardTitle, description: newBoardDescription });
       } else {
-        await api.post('/boards', {
-          title: newBoardTitle,
-          description: newBoardDescription
-        });
+        await api.post('/boards', { title: newBoardTitle, description: newBoardDescription });
       }
       closeModal();
-      fetchBoards();
+      fetchDashboardData();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save board');
     }
@@ -83,153 +99,276 @@ const Dashboard = () => {
     if (window.confirm('Are you sure you want to delete this board? All tasks inside will be lost.')) {
       try {
         await api.delete(`/boards/${id}`);
-        fetchBoards();
+        fetchDashboardData();
       } catch (err) {
         console.error('Failed to delete board:', err);
       }
     }
   };
 
+  // Helper for generating deterministic beautiful gradients/icons based on index
+  const cardStyles = [
+    { bg: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-500', icon: Briefcase, gradient: 'from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/20 dark:to-purple-500/20' },
+    { bg: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-500', icon: Rocket, gradient: 'from-emerald-400/10 to-teal-500/10 dark:from-emerald-400/20 dark:to-teal-500/20' },
+    { bg: 'bg-amber-100 dark:bg-amber-900/30 text-amber-500', icon: Lightbulb, gradient: 'from-amber-400/10 to-orange-500/10 dark:from-amber-400/20 dark:to-orange-500/20' },
+    { bg: 'bg-rose-100 dark:bg-rose-900/30 text-rose-500', icon: Layout, gradient: 'from-rose-400/10 to-pink-500/10 dark:from-rose-400/20 dark:to-pink-500/20' },
+  ];
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="py-6">
+    <div className="max-w-7xl mx-auto pb-12">
+      
+      {/* Hero Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Your Boards</h1>
-          <p className="text-secondary mt-1">Manage your projects and tasks</p>
+          <h1 className="text-[28px] font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            My Boards <span className="text-indigo-400">✨</span>
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm font-medium">Manage your projects and tasks in one place.</p>
         </div>
         <button
           onClick={openCreateModal}
-          className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl shadow-sm hover:shadow-primary/30 hover:shadow-lg active:scale-95 transition-all duration-200"
+          className="flex items-center gap-2 px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-xl shadow-sm shadow-indigo-500/20 active:scale-95 transition-all duration-200"
         >
           <Plus className="h-5 w-5" />
-          Create Board
+          New Board
         </button>
       </div>
 
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Total Boards */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-5">
+          <div className="h-14 w-14 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-500 shrink-0">
+            <Layout className="h-7 w-7" />
+          </div>
+          <div>
+            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Boards</p>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{totalBoards}</h3>
+            <p className="text-emerald-500 text-xs font-semibold mt-1">+2 this month</p>
+          </div>
+        </div>
+
+        {/* Total Tasks */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-5">
+          <div className="h-14 w-14 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-500 shrink-0">
+            <CheckSquare className="h-7 w-7" />
+          </div>
+          <div>
+            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Tasks</p>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{totalTasks}</h3>
+            <p className="text-emerald-500 text-xs font-semibold mt-1">+12 this week</p>
+          </div>
+        </div>
+
+        {/* In Progress */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-5">
+          <div className="h-14 w-14 rounded-xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-amber-500 shrink-0">
+            <Clock className="h-7 w-7" />
+          </div>
+          <div className="flex-1">
+            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">In Progress</p>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{inProgressTasks}</h3>
+            <p className="text-slate-400 text-xs font-medium mt-1">{inProgressPercentage}% of total</p>
+          </div>
+          <div className="w-16 h-8 text-amber-500 opacity-50"><TrendingUp className="h-full w-full" /></div>
+        </div>
+
+        {/* Completed */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-5">
+          <div className="h-14 w-14 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-500 shrink-0">
+            <CheckCircle2 className="h-7 w-7" />
+          </div>
+          <div className="flex-1">
+            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Completed</p>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{completedTasks}</h3>
+            <p className="text-slate-400 text-xs font-medium mt-1">{completedPercentage}% of total</p>
+          </div>
+          <div className="w-16 h-8 text-emerald-500 opacity-50"><TrendingUp className="h-full w-full" /></div>
+        </div>
+      </div>
+
+      {/* Filter & Layout Bar */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+        <div className="relative w-full md:w-80">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-4 w-4 text-slate-400" />
+          </div>
+          <input
+            type="text"
+            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
+            placeholder="Search boards..."
+          />
+        </div>
+        
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 shadow-sm">
+            <span className="text-sm font-medium text-slate-500">Sort by:</span>
+            <select className="bg-transparent text-sm font-bold text-slate-700 dark:text-slate-200 outline-none cursor-pointer">
+              <option>Recent</option>
+              <option>Oldest</option>
+              <option>A-Z</option>
+            </select>
+          </div>
+          <div className="flex bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-1">
+            <button className="p-1.5 bg-indigo-500 text-white rounded-lg shadow-sm"><Grid className="h-4 w-4" /></button>
+            <button className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg"><ListIcon className="h-4 w-4" /></button>
+          </div>
+        </div>
+      </div>
+
+      {/* Board Cards Grid */}
       {boards.length === 0 ? (
-        <div className="text-center py-16 bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-800 rounded-2xl border-dashed">
-          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-            <Layout className="h-8 w-8 text-primary" />
+        <div className="text-center py-16 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl border-dashed">
+          <div className="mx-auto w-16 h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center mb-4">
+            <Layout className="h-8 w-8 text-indigo-500" />
           </div>
           <h2 className="text-xl font-semibold mb-2">No boards yet</h2>
-          <p className="text-secondary mb-6 max-w-sm mx-auto">
+          <p className="text-slate-500 dark:text-slate-400 mb-6 max-w-sm mx-auto">
             Create your first board to start organizing your tasks and tracking your progress.
           </p>
           <button
             onClick={openCreateModal}
-            className="px-6 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors inline-flex items-center gap-2 shadow-sm"
+            className="px-6 py-2.5 bg-indigo-500 text-white rounded-xl font-semibold hover:bg-indigo-600 transition-colors inline-flex items-center gap-2 shadow-sm shadow-indigo-500/20"
           >
             <Plus className="h-5 w-5" />
             Create Your First Board
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {boards.map(board => (
-            <Link
-              key={board._id}
-              to={`/board/${board._id}`}
-              className="group block p-6 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1.5 hover:border-primary/40 dark:hover:border-primary/40 transition-all duration-300"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <Layout className="h-6 w-6 text-primary" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {boards.map((board, index) => {
+            const style = cardStyles[index % cardStyles.length];
+            const Icon = style.icon;
+            // Dummy avatars based on index for the mockup feel
+            const avatars = [
+              `https://ui-avatars.com/api/?name=John&background=random`,
+              `https://ui-avatars.com/api/?name=Sarah&background=random`,
+              `https://ui-avatars.com/api/?name=Mike&background=random`
+            ];
+
+            return (
+              <div key={board._id} className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
+                {/* Header Gradient Area */}
+                <div className={`h-32 w-full bg-gradient-to-br ${style.gradient} relative p-5 flex items-start justify-between shrink-0`}>
+                  <div className={`p-2.5 rounded-xl ${style.bg} shadow-sm backdrop-blur-sm`}>
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <div className="relative group/menu">
+                    <button className="p-1.5 bg-white/50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-800 rounded-lg backdrop-blur-sm transition-colors text-slate-700 dark:text-slate-300">
+                      <MoreVertical className="h-4 w-4" />
+                    </button>
+                    <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all z-10 p-1">
+                      <button onClick={(e) => openEditModal(e, board)} className="w-full text-left px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg flex items-center gap-2"><Edit2 className="h-3.5 w-3.5"/> Edit</button>
+                      <button onClick={(e) => handleDeleteBoard(e, board._id)} className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg flex items-center gap-2"><Trash2 className="h-3.5 w-3.5"/> Delete</button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={(e) => openEditModal(e, board)}
-                    className="p-1.5 text-slate-400 hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors"
-                    aria-label="Edit Board"
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={(e) => handleDeleteBoard(e, board._id)}
-                    className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
-                    aria-label="Delete Board"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
+
+                {/* Body Area */}
+                <Link to={`/board/${board._id}`} className="p-5 flex-1 flex flex-col">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-indigo-500 transition-colors">{board.title}</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-4 flex-1">
+                    {board.description || 'No description provided.'}
+                  </p>
+                  
+                  <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold mb-6 w-fit">
+                    Project Board
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <div className="flex -space-x-2">
+                      {avatars.map((avatar, i) => (
+                        <img key={i} src={avatar} alt="Team member" className="w-8 h-8 rounded-full border-2 border-white dark:border-slate-800" />
+                      ))}
+                      <div className="w-8 h-8 rounded-full border-2 border-white dark:border-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-500">
+                        +2
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400">
+                      <Clock className="h-3.5 w-3.5" />
+                      Updated {Math.floor(Math.random() * 5) + 1}d ago
+                    </div>
+                  </div>
+                </Link>
               </div>
-              <h3 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors">{board.title}</h3>
-              <p className="text-secondary text-sm line-clamp-2">
-                {board.description || 'No description provided.'}
-              </p>
-              <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-400">
-                Created {new Date(board.createdAt).toLocaleDateString()}
-              </div>
-            </Link>
-          ))}
+            );
+          })}
         </div>
       )}
 
+      {/* Bottom Banner */}
+      <div className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 border border-indigo-100 dark:border-indigo-800/50">
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-500 shrink-0">
+            <Sparkles className="h-6 w-6" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Stay organized. Stay productive.</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Track progress, collaborate with your team, and achieve more every day.</p>
+          </div>
+        </div>
+        <button className="whitespace-nowrap px-6 py-2.5 bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 text-sm font-bold rounded-xl border border-indigo-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all">
+          Explore Features
+        </button>
+      </div>
+
       {/* Create Board Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-800">
-              <h3 className="text-lg font-semibold">{editingBoardId ? 'Edit Board' : 'Create New Board'}</h3>
-              <button
-                onClick={closeModal}
-                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex justify-between items-center p-4 border-b border-slate-100 dark:border-slate-800">
+              <h3 className="text-lg font-bold">{editingBoardId ? 'Edit Board' : 'Create New Board'}</h3>
+              <button onClick={closeModal} className="p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>
             
             <form onSubmit={handleSubmitBoard} className="p-6">
               {error && (
-                <div className="bg-red-50 dark:bg-red-900/30 text-red-500 p-3 rounded-lg text-sm mb-4">
+                <div className="bg-red-50 dark:bg-red-900/30 text-red-500 p-3 rounded-lg text-sm font-medium mb-4">
                   {error}
                 </div>
               )}
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Board Title</label>
+                  <label className="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">Board Title</label>
                   <input
                     type="text"
                     required
                     value={newBoardTitle}
                     onChange={(e) => setNewBoardTitle(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
                     placeholder="e.g., Marketing Campaign"
                     autoFocus
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Description (Optional)</label>
+                  <label className="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">Description</label>
                   <textarea
                     value={newBoardDescription}
                     onChange={(e) => setNewBoardDescription(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none resize-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none resize-none"
                     placeholder="Brief description of this project..."
                     rows={3}
                   />
                 </div>
               </div>
               
-              <div className="mt-6 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                >
+              <div className="mt-8 flex justify-end gap-3">
+                <button type="button" onClick={closeModal} className="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors shadow-sm"
-                >
+                <button type="submit" className="px-5 py-2.5 text-sm font-semibold bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl shadow-sm shadow-indigo-500/20 transition-all">
                   {editingBoardId ? 'Save Changes' : 'Create Board'}
                 </button>
               </div>
