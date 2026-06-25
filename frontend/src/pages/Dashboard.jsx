@@ -315,12 +315,6 @@ const Dashboard = () => {
           {boards.map((board, index) => {
             const style = cardStyles[index % cardStyles.length];
             const Icon = style.icon;
-            // Dummy avatars based on index for the mockup feel
-            const avatars = [
-              `https://ui-avatars.com/api/?name=John&background=random`,
-              `https://ui-avatars.com/api/?name=Sarah&background=random`,
-              `https://ui-avatars.com/api/?name=Mike&background=random`
-            ];
 
             return (
               <div key={board._id} className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
@@ -353,17 +347,9 @@ const Dashboard = () => {
 
                   {/* Footer */}
                   <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
-                    <div className="flex -space-x-2">
-                      {avatars.map((avatar, i) => (
-                        <img key={i} src={avatar} alt="Team member" className="w-8 h-8 rounded-full border-2 border-white dark:border-slate-800" />
-                      ))}
-                      <div className="w-8 h-8 rounded-full border-2 border-white dark:border-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-500">
-                        +2
-                      </div>
-                    </div>
                     <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400">
                       <Clock className="h-3.5 w-3.5" />
-                      Updated {Math.floor(Math.random() * 5) + 1}d ago
+                      Created on {new Date(board.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </div>
                   </div>
                 </Link>
