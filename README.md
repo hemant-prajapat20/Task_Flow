@@ -99,8 +99,8 @@ GEMINI_API_KEY=your_google_gemini_api_key_here
 | **GET** | `/api/search` | Globally search tasks and boards by query string |
 
 ## 🌍 Live Demo & Test Credentials
-- **Frontend URL:** [Insert Vercel Link Here]
-- **Backend URL:** [Insert Render Link Here]
+- **Frontend URL:** (https://task-flow-theta-seven.vercel.app/)
+- **Backend URL:** (https://task-flow-ldhn.onrender.com/api)
 
 **Test Account:**
 - **Email:** `test@example.com`
