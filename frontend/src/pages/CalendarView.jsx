@@ -120,9 +120,17 @@ const CalendarView = () => {
           <button onClick={prevMonth} className="p-2 hover:bg-white dark:hover:bg-slate-700 sm:hover:bg-slate-100 dark:sm:hover:bg-slate-800 rounded-xl transition-colors shadow-sm sm:shadow-none">
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <h2 className="text-lg sm:text-xl font-bold w-32 sm:w-40 text-center text-slate-900 dark:text-white">
-            {monthNames[month]} {year}
-          </h2>
+          <input 
+            type="month"
+            value={`${year}-${(month + 1).toString().padStart(2, '0')}`}
+            onChange={(e) => {
+              if (e.target.value) {
+                const [y, m] = e.target.value.split('-');
+                setCurrentDate(new Date(parseInt(y), parseInt(m) - 1, 1));
+              }
+            }}
+            className="text-lg sm:text-xl font-bold w-40 sm:w-48 text-center text-slate-900 dark:text-white bg-transparent border border-transparent hover:border-slate-200 dark:hover:border-slate-700 focus:border-indigo-500 rounded-lg outline-none transition-all py-1 px-2 cursor-pointer"
+          />
           <button onClick={nextMonth} className="p-2 hover:bg-white dark:hover:bg-slate-700 sm:hover:bg-slate-100 dark:sm:hover:bg-slate-800 rounded-xl transition-colors shadow-sm sm:shadow-none">
             <ChevronRight className="h-5 w-5" />
           </button>

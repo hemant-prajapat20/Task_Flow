@@ -87,7 +87,7 @@ const Navbar = ({ onMenuClick }) => {
 
       {/* Center Section: Global Search */}
       <div className="order-3 sm:order-2 flex-1 flex justify-center w-full min-w-full sm:min-w-0 lg:w-1/3 relative px-1 sm:px-4" ref={searchRef}>
-        <div className="relative w-full max-w-md xl:max-w-lg z-50">
+        <div className="relative w-full max-w-md xl:max-w-lg z-30">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             {isSearching ? (
               <Loader2 className="h-4 w-4 text-indigo-500 animate-spin" />
