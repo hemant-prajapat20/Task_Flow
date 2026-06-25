@@ -93,53 +93,81 @@ const GlobalTasks = () => {
             No tasks found. Create a board and add tasks to see them here!
           </div>
         ) : (
-          <div className="divide-y divide-slate-100 dark:divide-slate-800">
-            {tasks.map(task => (
-              <div key={task._id} className="p-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4 group">
-                
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${priorityColors[task.priority]}`}>
-                      {task.priority}
-                    </span>
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${statusColors[task.status]}`}>
-                      {task.status.replace('-', ' ')}
-                    </span>
-                    <Link to={`/board/${task.boardId}`} className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline">
-                      <Layout className="h-3.5 w-3.5" />
-                      {task.boardTitle}
-                    </Link>
-                  </div>
-                  
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                    {task.title}
-                  </h3>
-                  
-                  {task.description && (
-                    <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1 max-w-3xl">
-                      {task.description}
-                    </p>
-                  )}
-                </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[800px]">
+              <thead>
+                <tr className="border-b border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider bg-slate-50/50 dark:bg-slate-800/20">
+                  <th className="p-4 pl-6 font-semibold">Task Title</th>
+                  <th className="p-4 font-semibold">Status</th>
+                  <th className="p-4 font-semibold">Priority</th>
+                  <th className="p-4 font-semibold">Due Date</th>
+                  <th className="p-4 font-semibold">Created At</th>
+                  <th className="p-4 pr-6 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {tasks.map(task => (
+                  <tr key={task._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                    
+                    <td className="p-4 pl-6">
+                      <div className="flex flex-col">
+                        <Link to={`/board/${task.boardId}`} className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline mb-1 font-bold uppercase tracking-wider flex items-center gap-1 w-fit">
+                          <Layout className="h-3 w-3" /> {task.boardTitle}
+                        </Link>
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">
+                          {task.title}
+                        </h3>
+                        {task.description && (
+                          <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5 max-w-md">
+                            {task.description}
+                          </p>
+                        )}
+                      </div>
+                    </td>
 
-                <div className="flex items-center gap-6 shrink-0 md:w-64 justify-end">
-                  {task.estimatedEffort && (
-                    <div className="flex items-center gap-1.5 text-sm font-medium text-slate-500 dark:text-slate-400">
-                      <Clock className="h-4 w-4" />
-                      {task.estimatedEffort}
-                    </div>
-                  )}
-                  
-                  {task.dueDate && (
-                    <div className={`flex items-center gap-1.5 text-sm font-medium ${isOverdue(task.dueDate) && task.status !== 'done' ? 'text-red-500' : 'text-slate-500 dark:text-slate-400'}`}>
-                      {isOverdue(task.dueDate) && task.status !== 'done' ? <AlertCircle className="h-4 w-4" /> : <Calendar className="h-4 w-4" /> }
-                      {new Date(task.dueDate).toLocaleDateString()}
-                    </div>
-                  )}
-                </div>
-                
-              </div>
-            ))}
+                    <td className="p-4">
+                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded inline-block ${statusColors[task.status]}`}>
+                        {task.status.replace('-', ' ')}
+                      </span>
+                    </td>
+
+                    <td className="p-4">
+                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded inline-block ${priorityColors[task.priority]}`}>
+                        {task.priority}
+                      </span>
+                    </td>
+
+                    <td className="p-4 whitespace-nowrap">
+                      {task.dueDate ? (
+                        <div className={`flex items-center gap-1.5 text-xs font-medium ${isOverdue(task.dueDate) && task.status !== 'done' ? 'text-red-500' : 'text-slate-500 dark:text-slate-400'}`}>
+                          {isOverdue(task.dueDate) && task.status !== 'done' ? <AlertCircle className="h-3.5 w-3.5" /> : <Calendar className="h-3.5 w-3.5" /> }
+                          {new Date(task.dueDate).toLocaleDateString()}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-400 dark:text-slate-600">-</span>
+                      )}
+                    </td>
+
+                    <td className="p-4 whitespace-nowrap">
+                      {task.createdAt ? (
+                        <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                           {new Date(task.createdAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-400 dark:text-slate-600">-</span>
+                      )}
+                    </td>
+
+                    <td className="p-4 pr-6 text-right whitespace-nowrap">
+                       <Link to={`/board/${task.boardId}`} className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 px-3 py-1.5 rounded-lg transition-colors inline-block">
+                         Go to Board
+                       </Link>
+                    </td>
+
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

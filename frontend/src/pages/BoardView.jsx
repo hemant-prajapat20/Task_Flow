@@ -194,24 +194,21 @@ const BoardView = () => {
 
   return (
     <div className="py-2 h-[calc(100vh-6rem)] flex flex-col">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 shrink-0">
-        <div className="flex items-center gap-4">
-          <Link to="/" className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold">{board.title}</h1>
-            {board.description && <p className="text-secondary text-sm">{board.description}</p>}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6 shrink-0 px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-4 min-w-0">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold truncate">{board.title}</h1>
+            {board.description && <p className="text-secondary text-sm truncate">{board.description}</p>}
           </div>
         </div>
         
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 shadow-sm">
-            <Filter className="h-4 w-4 text-slate-400" />
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto shrink-0">
+          <div className="flex-1 sm:flex-none flex items-center gap-1.5 sm:gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2 sm:px-3 py-1.5 shadow-sm min-w-0 overflow-hidden">
+            <Filter className="h-4 w-4 text-slate-400 shrink-0" />
             <select 
               value={filterPriority} 
               onChange={(e) => setFilterPriority(e.target.value)}
-              className="bg-transparent text-sm font-medium outline-none text-slate-700 dark:text-slate-200 cursor-pointer"
+              className="bg-transparent text-xs sm:text-sm font-medium outline-none text-slate-700 dark:text-slate-200 cursor-pointer w-full truncate"
             >
               <option value="all">All Priorities</option>
               <option value="high">High Priority</option>
@@ -220,12 +217,12 @@ const BoardView = () => {
             </select>
           </div>
           
-          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 shadow-sm">
-            <ArrowUpDown className="h-4 w-4 text-slate-400" />
+          <div className="flex-1 sm:flex-none flex items-center gap-1.5 sm:gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2 sm:px-3 py-1.5 shadow-sm min-w-0 overflow-hidden">
+            <ArrowUpDown className="h-4 w-4 text-slate-400 shrink-0" />
             <select 
               value={sortBy} 
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-transparent text-sm font-medium outline-none text-slate-700 dark:text-slate-200 cursor-pointer"
+              className="bg-transparent text-xs sm:text-sm font-medium outline-none text-slate-700 dark:text-slate-200 cursor-pointer w-full truncate"
             >
               <option value="none">Sort: Default</option>
               <option value="earliest">Due: Earliest First</option>
@@ -235,11 +232,11 @@ const BoardView = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-x-auto overflow-y-hidden">
-        <DragDropContext onDragEnd={onDragEnd}>
-          <div className="flex gap-6 h-full pb-4 items-stretch min-w-max">
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="flex-1 overflow-x-auto overflow-y-hidden w-full relative">
+          <div className="flex gap-4 sm:gap-6 h-full pb-4 items-stretch min-w-max px-4 sm:px-6 lg:px-8">
             {COLUMNS.map((col) => (
-              <div key={col.id} className={`w-80 shrink-0 flex flex-col h-full rounded-xl border ${col.color}`}>
+              <div key={col.id} className={`w-[280px] sm:w-80 shrink-0 flex flex-col h-full rounded-xl border ${col.color}`}>
                 <div className="p-4 flex justify-between items-center shrink-0 border-b border-inherit">
                   <h3 className="font-semibold flex items-center gap-2">
                     {col.title}
@@ -330,8 +327,8 @@ const BoardView = () => {
               </div>
             ))}
           </div>
-        </DragDropContext>
-      </div>
+        </div>
+      </DragDropContext>
 
       {isTaskModalOpen && (
         <TaskModal

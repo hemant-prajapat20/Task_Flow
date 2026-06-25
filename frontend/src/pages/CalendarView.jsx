@@ -59,6 +59,10 @@ const CalendarView = () => {
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
 
+  const totalCells = firstDay + daysInMonth;
+  const totalRows = Math.ceil(totalCells / 7);
+  const gridRowsClass = totalRows === 6 ? 'grid-rows-6' : (totalRows === 5 ? 'grid-rows-5' : 'grid-rows-4');
+
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -138,8 +142,8 @@ const CalendarView = () => {
       </div>
 
       {/* Calendar Grid Container */}
-      <div className="flex-1 bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col">
-        <div className="flex flex-col h-full w-full">
+      <div className="flex-1 bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto flex flex-col">
+        <div className="min-w-[800px] flex flex-col h-full">
           {/* Days Header */}
           <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20 shrink-0">
           {days.map(day => (
@@ -150,7 +154,7 @@ const CalendarView = () => {
         </div>
         
         {/* Days Grid */}
-        <div className="flex-1 grid grid-cols-7 grid-rows-5 auto-rows-fr">
+        <div className={`flex-1 grid grid-cols-7 ${gridRowsClass} auto-rows-fr`}>
           {/* Empty cells before the 1st */}
           {Array.from({ length: firstDay }).map((_, i) => (
             <div key={`empty-${i}`} className="border-b border-r border-slate-100 dark:border-slate-800/50 bg-slate-50/30 dark:bg-slate-900/30"></div>
@@ -202,8 +206,8 @@ const CalendarView = () => {
             <div key={`empty-end-${i}`} className="border-b border-r border-slate-100 dark:border-slate-800/50 bg-slate-50/30 dark:bg-slate-900/30"></div>
           ))}
         </div>
+        </div>
       </div>
-    </div>
     </div>
   );
 };
