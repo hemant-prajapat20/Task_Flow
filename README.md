@@ -2,40 +2,42 @@
 
 TaskFlow is a modern, full-stack Kanban-style project management application built with the **MERN** stack (MongoDB, Express, React, Node.js). It is designed to help individuals and teams organize tasks, manage projects efficiently, and boost productivity using built-in AI estimation features.
 
-## ✨ Features
-
-- **🔐 Secure Authentication**: JWT-based login and registration system with encrypted passwords and strict validation.
-- **📋 Project Boards**: Create, rename, edit, and delete multiple boards. Each board functions as a standalone project.
-- **🕹️ Kanban Interface**: Interactive drag-and-drop task management across "To Do", "In Progress", and "Done" columns.
-- **⚡ Task Details**: Set priority levels (High/Medium/Low), due dates, and track estimated effort for individual tasks.
-- **🤖 AI Task Estimator**: Integrated with Google's Gemini API to automatically suggest effort estimates and due dates based on your task title and description.
-- **🔍 Global Search**: Instant, debounced global search to find any task or board across your entire account.
-- **📊 Sorting & Filtering**: Instantly sort tasks by Due Date or filter by Priority within your boards.
-- **🌗 Theming**: Beautiful, fully-responsive UI built with Tailwind CSS featuring an interactive Light Mode (with gradient mesh) and a sleek Dark Mode.
+## 📸 Screenshots
+*(Note: Add your actual screenshots to a `screenshots` folder in the root directory)*
+- **Login Page:** ![Login Page](./screenshots/login.png)
+- **Dashboard:** ![Dashboard](./screenshots/dashboard.png)
+- **Board View (Kanban):** ![Board View](./screenshots/board-view.png)
+- **Mobile View:** ![Mobile View](./screenshots/mobile-view.png)
 
 ## 🛠️ Technology Stack
-
 **Frontend:**
-- React (Vite)
-- Tailwind CSS v4 (Styling)
-- React Router DOM (Navigation)
-- Axios (API requests)
+- React.js (Vite)
+- Tailwind CSS v4
+- React Router DOM
 - @hello-pangea/dnd (Drag and drop)
-- Lucide React (Icons)
+- Axios & Lucide React
 
 **Backend:**
 - Node.js & Express.js
-- MongoDB & Mongoose
 - JSON Web Tokens (JWT) & bcryptjs
 - @google/genai (AI Integration)
-- CORS & dotenv
+
+**Database:**
+- MongoDB & Mongoose (NoSQL)
+
+## 🤖 AI Integration (Google Gemini)
+**Which LLM API was chosen and why?**
+TaskFlow utilizes the **Google Gemini API** (`@google/genai`) for its AI features. Gemini was chosen because it offers incredibly fast response times, exceptional natural language comprehension, and a very generous free tier for developers, making it perfect for rapid text-based analysis.
+
+**How the AI feature works:**
+When creating or editing a task, users can click the "Generate AI Estimate" button. The frontend sends the task's `title` and `description` to the backend `/api/ai/estimate` route. The backend securely communicates with the Gemini model, prompting it to act as a senior project manager. Gemini analyzes the task complexity and returns a structured JSON response containing an estimated time effort (e.g., "3 hours") and a logical due date offset, which automatically populates the user's form.
 
 ## 🚀 Getting Started Locally
 
 ### Prerequisites
-- Node.js installed on your machine
-- A MongoDB cluster URI (MongoDB Atlas recommended)
-- A Google Gemini API Key (Available free at Google AI Studio)
+- Node.js installed
+- A MongoDB cluster URI (Atlas)
+- A Google Gemini API Key
 
 ### 1. Clone the repository
 ```bash
@@ -48,13 +50,7 @@ cd Task_Flow
 cd backend
 npm install
 ```
-Create a `.env` file in the `backend` directory and add the following variables:
-```env
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-GEMINI_API_KEY=your_gemini_api_key
-```
+Create a `.env` file in the `backend` directory (see `.env.example` below) and add your keys.
 Start the backend server:
 ```bash
 npm run dev
@@ -66,31 +62,57 @@ Open a new terminal window:
 cd frontend
 npm install
 ```
+Create a `.env` file in the `frontend` directory:
+```env
+VITE_API_URL=http://localhost:5000/api
+```
 Start the frontend development server:
 ```bash
 npm run dev
 ```
+The application will run at `http://localhost:5173`.
 
-The application will now be running at `http://localhost:5173`.
+## 🔐 Environment Variables (.env.example)
+Please refer to the `backend/.env.example` file for the required backend variables:
+```env
+PORT=5000
+MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/taskflow?retryWrites=true&w=majority
+JWT_SECRET=your_super_secret_jwt_key_here
+GEMINI_API_KEY=your_google_gemini_api_key_here
+```
 
-## 📦 Deployment Guide
+## 📡 API Documentation
 
-**Backend (Render):**
-1. Push your code to GitHub.
-2. Create a new "Web Service" on Render.com and connect your repository.
-3. Set the Root Directory to `backend`.
-4. Set the Build Command to `npm install`.
-5. Set the Start Command to `node server.js`.
-6. Add your `.env` variables in the Render dashboard.
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| **POST** | `/api/auth/register` | Register a new user account |
+| **POST** | `/api/auth/login` | Authenticate user & receive JWT token |
+| **GET** | `/api/boards` | Fetch all boards for the authenticated user |
+| **POST** | `/api/boards` | Create a new project board |
+| **PUT** | `/api/boards/:id` | Update a board's title/description |
+| **DELETE** | `/api/boards/:id` | Delete a board and all its associated tasks |
+| **GET** | `/api/tasks/board/:id` | Fetch all tasks belonging to a specific board |
+| **POST** | `/api/tasks/board/:id` | Create a new task in a specific board |
+| **PUT** | `/api/tasks/:id` | Update a task (including drag-and-drop status changes) |
+| **DELETE** | `/api/tasks/:id` | Delete a specific task |
+| **POST** | `/api/ai/estimate` | Send task details to Gemini API for effort estimation |
+| **GET** | `/api/search` | Globally search tasks and boards by query string |
 
-**Frontend (Vercel):**
-1. Create a `.env` file inside the `frontend` folder with: `VITE_API_URL=your_render_backend_url/api`.
-2. Push your code to GitHub.
-3. Import the repository into Vercel.
-4. Set the Framework Preset to "Vite".
-5. Set the Root Directory to `frontend`.
-6. Add your Environment Variable in Vercel.
-7. Click Deploy.
+## 🌍 Live Demo & Test Credentials
+- **Frontend URL:** [Insert Vercel Link Here]
+- **Backend URL:** [Insert Render Link Here]
 
----
-*Developed by Hemant Prajapat*
+**Test Account:**
+- **Email:** `test@example.com`
+- **Password:** `password123`
+
+## ⚠️ Known Issues & Future Improvements
+**Limitations:**
+- The application currently operates in a single-user context (workspaces are private to the logged-in user). There is no multi-user collaboration or board sharing yet.
+- Task ordering within the exact same column does not persist strictly on refresh (it groups by status, but strict index ordering requires an indexing schema update).
+
+**What I would improve with more time:**
+1. **WebSockets (Socket.io):** Implement real-time updates so if a board is shared, multiple users can see drag-and-drop actions happen instantly without refreshing.
+2. **Team Collaboration:** Add Role-Based Access Control (RBAC) allowing users to invite team members to specific boards as Viewers or Editors.
+3. **Automated Testing:** Implement comprehensive unit and integration tests using Jest and Cypress to ensure UI stability.
+4. **Cross-Board Dragging:** Allow users to drag a task from one board directly into another.
