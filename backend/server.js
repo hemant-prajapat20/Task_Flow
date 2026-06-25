@@ -6,8 +6,7 @@ const connectDB = require('./config/db');
 // Load env vars
 dotenv.config();
 
-// Connect to database
-connectDB();
+
 
 const app = express();
 
@@ -15,12 +14,23 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Log every incoming request
+app.use((req, res, next) => {
+  console.log(`[REQUEST] ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/boards', require('./routes/boardRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
 app.use('/api/search', require('./routes/searchRoutes'));
+
+// Basic route so the server doesn't return 404 when you visit localhost:5000
+app.get('/', (req, res) => {
+  res.send('TaskFlow Backend API is running successfully! Please open the frontend at http://localhost:5173');
+});
 
 // Error handler middleware
 app.use((err, req, res, next) => {
@@ -30,6 +40,9 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Connect to database first, then start server
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server successfully running at: http://localhost:${PORT}`);
+  });
 });

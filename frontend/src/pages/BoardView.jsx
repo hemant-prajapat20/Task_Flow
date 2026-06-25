@@ -6,9 +6,9 @@ import api from '../api/axios';
 import TaskModal from '../components/TaskModal';
 
 const COLUMNS = [
-  { id: 'todo', title: 'To Do', color: 'bg-slate-50/60 dark:bg-slate-800/40 backdrop-blur-md border-slate-200 dark:border-slate-700/60 shadow-sm' },
-  { id: 'in-progress', title: 'In Progress', color: 'bg-blue-50/60 dark:bg-blue-900/10 backdrop-blur-md border-blue-200/70 dark:border-blue-800/30 shadow-sm' },
-  { id: 'done', title: 'Done', color: 'bg-green-50/60 dark:bg-green-900/10 backdrop-blur-md border-green-200/70 dark:border-green-800/30 shadow-sm' }
+  { id: 'todo', title: 'To Do', color: 'bg-slate-50/60 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700/60 shadow-sm' },
+  { id: 'in-progress', title: 'In Progress', color: 'bg-blue-50/80 dark:bg-blue-900/20 border-blue-200/70 dark:border-blue-800/30 shadow-sm' },
+  { id: 'done', title: 'Done', color: 'bg-green-50/80 dark:bg-green-900/20 border-green-200/70 dark:border-green-800/30 shadow-sm' }
 ];
 
 const priorityColors = {
@@ -260,7 +260,7 @@ const BoardView = () => {
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
-                      className={`flex-1 overflow-y-auto p-3 space-y-3 min-h-[150px] ${
+                      className={`flex-1 overflow-y-auto p-3 min-h-[150px] ${
                         snapshot.isDraggingOver ? 'bg-black/5 dark:bg-white/5' : ''
                       }`}
                     >
@@ -271,8 +271,9 @@ const BoardView = () => {
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className={`bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 group transition-all duration-200
-                                ${snapshot.isDragging ? 'shadow-2xl scale-105 rotate-2 ring-2 ring-primary ring-offset-1 dark:ring-offset-slate-900 cursor-grabbing' : 'hover:-translate-y-0.5 hover:shadow-md hover:border-primary/30'}
+                              style={provided.draggableProps.style}
+                              className={`bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 group mb-3
+                                ${snapshot.isDragging ? 'z-50 shadow-2xl ring-2 ring-primary ring-offset-1 dark:ring-offset-slate-900 cursor-grabbing' : 'hover:shadow-md hover:border-primary/30'}
                                 ${isDndDisabled ? 'cursor-default' : 'cursor-grab'}`}
                             >
                               <div className="flex justify-between items-start mb-2">

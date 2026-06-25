@@ -34,7 +34,7 @@ const Register = () => {
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
-      <div className="w-full max-w-sm bg-surface-light dark:bg-surface-dark rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-6">
+      <div className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-800 p-8 hover:shadow-2xl transition-shadow duration-500">
         <div className="flex flex-col items-center mb-6">
           <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
             <LayoutDashboard className="h-6 w-6 text-primary" />
@@ -57,7 +57,7 @@ const Register = () => {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:border-primary/50 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 outline-none"
               placeholder="John Doe"
             />
           </div>
@@ -68,7 +68,7 @@ const Register = () => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:border-primary/50 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 outline-none"
               placeholder="you@example.com"
             />
           </div>
@@ -80,7 +80,7 @@ const Register = () => {
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:border-primary/50 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 outline-none"
               placeholder="••••••••"
             />
           </div>
@@ -99,7 +99,7 @@ const Register = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-2.5 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg shadow-sm hover:shadow transition-all disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center"
+            className="w-full py-2.5 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-xl shadow-sm hover:shadow-lg hover:shadow-primary/30 active:scale-[0.98] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center"
           >
             {isLoading ? (
               <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

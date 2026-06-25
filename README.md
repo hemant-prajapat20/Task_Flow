@@ -1,77 +1,96 @@
-# TaskFlow - A Smart Task & Project Manager
+# TaskFlow - Project Management Dashboard 🚀
 
-TaskFlow is a lightweight, full-stack task and project management application built with the MERN stack. It features an integrated AI assistant to suggest task effort and due dates.
+TaskFlow is a modern, full-stack Kanban-style project management application built with the **MERN** stack (MongoDB, Express, React, Node.js). It is designed to help individuals and teams organize tasks, manage projects efficiently, and boost productivity using built-in AI estimation features.
 
-## Screenshots
+## ✨ Features
 
-*(Add screenshots here before submitting: Login, Dashboard, Board view, Mobile view)*
+- **🔐 Secure Authentication**: JWT-based login and registration system with encrypted passwords and strict validation.
+- **📋 Project Boards**: Create, rename, edit, and delete multiple boards. Each board functions as a standalone project.
+- **🕹️ Kanban Interface**: Interactive drag-and-drop task management across "To Do", "In Progress", and "Done" columns.
+- **⚡ Task Details**: Set priority levels (High/Medium/Low), due dates, and track estimated effort for individual tasks.
+- **🤖 AI Task Estimator**: Integrated with Google's Gemini API to automatically suggest effort estimates and due dates based on your task title and description.
+- **🔍 Global Search**: Instant, debounced global search to find any task or board across your entire account.
+- **📊 Sorting & Filtering**: Instantly sort tasks by Due Date or filter by Priority within your boards.
+- **🌗 Theming**: Beautiful, fully-responsive UI built with Tailwind CSS featuring an interactive Light Mode (with gradient mesh) and a sleek Dark Mode.
 
-## Tech Stack
-- **Frontend**: React.js (v18), Vite, React Router, Tailwind CSS v4, `@hello-pangea/dnd` (for Drag & Drop)
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB (Mongoose)
-- **AI Integration**: Google Gemini API (`@google/genai`)
+## 🛠️ Technology Stack
 
-## Features Implemented
-- **Authentication**: JWT-based auth with bcrypt hashed passwords.
-- **Boards (Projects)**: Full CRUD operations, strictly scoped to the logged-in user.
-- **Tasks & Kanban View**: Drag-and-drop tasks across To Do, In Progress, and Done columns.
-- **AI Feature**: Click "Suggest" when creating a task to have Gemini analyze your title and description, and suggest an effort estimate and reasonable due date.
-- **UI/UX**: Fully responsive, dark mode toggle, loading skeletons, error handling.
+**Frontend:**
+- React (Vite)
+- Tailwind CSS v4 (Styling)
+- React Router DOM (Navigation)
+- Axios (API requests)
+- @hello-pangea/dnd (Drag and drop)
+- Lucide React (Icons)
 
-## Local Setup Instructions
+**Backend:**
+- Node.js & Express.js
+- MongoDB & Mongoose
+- JSON Web Tokens (JWT) & bcryptjs
+- @google/genai (AI Integration)
+- CORS & dotenv
 
-### 1. Backend Setup
-1. Open a terminal and navigate to the `backend` folder:
-   ```bash
-   cd backend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Set up environment variables:
-   Copy `.env.example` to `.env` and fill in your values.
-   ```
-   PORT=5000
-   MONGO_URI=mongodb://127.0.0.1:27017/taskflow
-   JWT_SECRET=your_jwt_secret_here
-   GEMINI_API_KEY=your_google_gemini_api_key_here
-   ```
-4. Start the server:
-   ```bash
-   npm run dev
-   ```
+## 🚀 Getting Started Locally
 
-### 2. Frontend Setup
-1. Open a new terminal and navigate to the `frontend` folder:
-   ```bash
-   cd frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Set up environment variables:
-   Copy `.env` to `.env.local` if needed, ensuring `VITE_API_URL` points to your backend.
-   ```
-   VITE_API_URL=http://localhost:5000/api
-   ```
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
+### Prerequisites
+- Node.js installed on your machine
+- A MongoDB cluster URI (MongoDB Atlas recommended)
+- A Google Gemini API Key (Available free at Google AI Studio)
 
-## AI Feature Details
-**Provider**: Google Gemini API (`gemini-2.0-flash`)
-**Why**: Generous free tier, excellent reasoning speed, and very easy to integrate securely on the Node backend.
-**How it works**: The user types a task title/description. The frontend calls the protected `/api/ai/suggest-estimate` backend route. The backend sends a structured prompt to Gemini, asking for a JSON response with effort and due date. The backend parses this securely and returns it to the frontend, which pre-fills the form. The API key never reaches the browser.
+### 1. Clone the repository
+```bash
+git clone https://github.com/hemant-prajapat20/Task_Flow.git
+cd Task_Flow
+```
 
-## Deployment Information
-- **Frontend**: Ready for Vercel. A `vercel.json` is included for React Router SPA fallbacks.
-- **Backend**: Ready for Render/Railway. Just set the Environment Variables in the Render dashboard and start the web service with `npm start`.
-- **Database**: Use MongoDB Atlas for the deployed version.
+### 2. Backend Setup
+```bash
+cd backend
+npm install
+```
+Create a `.env` file in the `backend` directory and add the following variables:
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+GEMINI_API_KEY=your_gemini_api_key
+```
+Start the backend server:
+```bash
+npm run dev
+```
 
-## Bonus Challenges Completed
-- **Drag-and-drop**: Smooth column movement implemented.
-- **UI Styling**: Tailwind CSS v4 with dark mode toggle.
+### 3. Frontend Setup
+Open a new terminal window:
+```bash
+cd frontend
+npm install
+```
+Start the frontend development server:
+```bash
+npm run dev
+```
+
+The application will now be running at `http://localhost:5173`.
+
+## 📦 Deployment Guide
+
+**Backend (Render):**
+1. Push your code to GitHub.
+2. Create a new "Web Service" on Render.com and connect your repository.
+3. Set the Root Directory to `backend`.
+4. Set the Build Command to `npm install`.
+5. Set the Start Command to `node server.js`.
+6. Add your `.env` variables in the Render dashboard.
+
+**Frontend (Vercel):**
+1. Create a `.env` file inside the `frontend` folder with: `VITE_API_URL=your_render_backend_url/api`.
+2. Push your code to GitHub.
+3. Import the repository into Vercel.
+4. Set the Framework Preset to "Vite".
+5. Set the Root Directory to `frontend`.
+6. Add your Environment Variable in Vercel.
+7. Click Deploy.
+
+---
+*Developed by Hemant Prajapat*
