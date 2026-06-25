@@ -237,9 +237,9 @@ const BoardView = () => {
 
       <div className="flex-1 overflow-x-auto overflow-y-hidden">
         <DragDropContext onDragEnd={onDragEnd}>
-          <div className="flex gap-6 h-full pb-4 items-start min-w-max">
+          <div className="flex gap-6 h-full pb-4 items-stretch min-w-max">
             {COLUMNS.map((col) => (
-              <div key={col.id} className={`w-80 shrink-0 flex flex-col max-h-full rounded-xl border ${col.color}`}>
+              <div key={col.id} className={`w-80 shrink-0 flex flex-col h-full rounded-xl border ${col.color}`}>
                 <div className="p-4 flex justify-between items-center shrink-0 border-b border-inherit">
                   <h3 className="font-semibold flex items-center gap-2">
                     {col.title}

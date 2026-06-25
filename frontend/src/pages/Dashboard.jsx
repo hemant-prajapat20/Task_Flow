@@ -44,10 +44,21 @@ const Dashboard = () => {
   // Stats Calculations
   const totalBoards = boards.length;
   const totalTasks = tasks.length;
+  const todoTasks = tasks.filter(t => t.status === 'todo').length;
   const inProgressTasks = tasks.filter(t => t.status === 'in-progress').length;
   const completedTasks = tasks.filter(t => t.status === 'done').length;
+  
+  const todoPercentage = totalTasks ? Math.round((todoTasks / totalTasks) * 100) : 0;
   const inProgressPercentage = totalTasks ? Math.round((inProgressTasks / totalTasks) * 100) : 0;
   const completedPercentage = totalTasks ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  const boardsWithStats = boards.map(board => {
+    // Some tasks might have board as an object, others as an ID string depending on population
+    const boardTasks = tasks.filter(t => t.board === board._id || t.board?._id === board._id || t.boardId === board._id);
+    const completed = boardTasks.filter(t => t.status === 'done').length;
+    const completionRate = boardTasks.length ? Math.round((completed / boardTasks.length) * 100) : 0;
+    return { ...board, taskCount: boardTasks.length, completionRate };
+  });
 
   // Board Actions
   const openCreateModal = () => {
@@ -195,34 +206,91 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Filter & Layout Bar */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-        <div className="relative w-full md:w-80">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-slate-400" />
+      {/* Analytics Charts Section */}
+      {totalBoards > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+          
+          {/* Task Status Chart (Horizontal Stacked Bar) */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <CheckSquare className="h-5 w-5 text-indigo-500" /> Task Breakdown
+              </h3>
+              <span className="text-sm font-medium text-slate-500">{totalTasks} Total</span>
+            </div>
+            
+            {/* The Stacked Bar */}
+            <div className="h-6 w-full flex rounded-full overflow-hidden mb-6 bg-slate-100 dark:bg-slate-700">
+              {totalTasks === 0 ? (
+                <div className="w-full h-full bg-slate-200 dark:bg-slate-700"></div>
+              ) : (
+                <>
+                  <div style={{ width: `${todoPercentage}%` }} className="bg-slate-400 dark:bg-slate-500 hover:opacity-90 transition-opacity cursor-pointer relative group"></div>
+                  <div style={{ width: `${inProgressPercentage}%` }} className="bg-amber-400 dark:bg-amber-500 hover:opacity-90 transition-opacity cursor-pointer"></div>
+                  <div style={{ width: `${completedPercentage}%` }} className="bg-emerald-500 hover:opacity-90 transition-opacity cursor-pointer"></div>
+                </>
+              )}
+            </div>
+            
+            {/* Legend */}
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div>
+                <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <div className="w-2.5 h-2.5 rounded-full bg-slate-400 dark:bg-slate-500"></div> To Do
+                </div>
+                <div className="text-xl font-bold text-slate-900 dark:text-white">{todoPercentage}%</div>
+                <div className="text-xs text-slate-400">{todoTasks} tasks</div>
+              </div>
+              <div>
+                <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-400 dark:bg-amber-500"></div> In Progress
+                </div>
+                <div className="text-xl font-bold text-slate-900 dark:text-white">{inProgressPercentage}%</div>
+                <div className="text-xs text-slate-400">{inProgressTasks} tasks</div>
+              </div>
+              <div>
+                <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div> Done
+                </div>
+                <div className="text-xl font-bold text-slate-900 dark:text-white">{completedPercentage}%</div>
+                <div className="text-xs text-slate-400">{completedTasks} tasks</div>
+              </div>
+            </div>
           </div>
-          <input
-            type="text"
-            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
-            placeholder="Search boards..."
-          />
+
+          {/* Project Completion Chart (Vertical List) */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-6">
+              <TrendingUp className="h-5 w-5 text-indigo-500" /> Project Completion
+            </h3>
+            
+            <div className="flex-1 overflow-y-auto pr-2 space-y-5 custom-scrollbar max-h-64">
+              {boardsWithStats.length === 0 ? (
+                <div className="text-center text-sm text-slate-500">No projects to display.</div>
+              ) : (
+                boardsWithStats.map(board => (
+                  <div key={board._id}>
+                    <div className="flex justify-between items-end mb-2">
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white">{board.title}</h4>
+                        <p className="text-xs text-slate-500">{board.taskCount} total tasks</p>
+                      </div>
+                      <span className="text-sm font-bold text-indigo-600 dark:text-indigo-400">{board.completionRate}%</span>
+                    </div>
+                    <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                      <div 
+                        className="bg-indigo-500 h-2 rounded-full transition-all duration-1000 ease-out" 
+                        style={{ width: `${board.completionRate}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+          
         </div>
-        
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 shadow-sm">
-            <span className="text-sm font-medium text-slate-500">Sort by:</span>
-            <select className="bg-transparent text-sm font-bold text-slate-700 dark:text-slate-200 outline-none cursor-pointer">
-              <option>Recent</option>
-              <option>Oldest</option>
-              <option>A-Z</option>
-            </select>
-          </div>
-          <div className="flex bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-1">
-            <button className="p-1.5 bg-indigo-500 text-white rounded-lg shadow-sm"><Grid className="h-4 w-4" /></button>
-            <button className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg"><ListIcon className="h-4 w-4" /></button>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Board Cards Grid */}
       {boards.length === 0 ? (
@@ -305,21 +373,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Bottom Banner */}
-      <div className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 border border-indigo-100 dark:border-indigo-800/50">
-        <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-500 shrink-0">
-            <Sparkles className="h-6 w-6" />
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Stay organized. Stay productive.</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Track progress, collaborate with your team, and achieve more every day.</p>
-          </div>
-        </div>
-        <button className="whitespace-nowrap px-6 py-2.5 bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 text-sm font-bold rounded-xl border border-indigo-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all">
-          Explore Features
-        </button>
-      </div>
+
 
       {/* Create Board Modal */}
       {isModalOpen && (

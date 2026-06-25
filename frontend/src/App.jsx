@@ -5,6 +5,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import BoardView from './pages/BoardView';
+import GlobalTasks from './pages/GlobalTasks';
+import CalendarView from './pages/CalendarView';
 import NotFound from './pages/NotFound';
 import Sidebar from './components/Sidebar';
 
@@ -22,7 +24,11 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+import React, { useState } from 'react';
+
 function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <Router>
       <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-900 font-sans">
@@ -32,14 +38,16 @@ function App() {
           
           <Route path="/*" element={
             <ProtectedRoute>
-              <div className="flex w-full h-full">
-                <Sidebar />
-                <div className="flex-1 flex flex-col h-screen overflow-hidden bg-[#f4f7fe] dark:bg-slate-900">
-                  <Navbar />
-                  <main className="flex-1 overflow-y-auto p-4 sm:p-8">
+              <div className="flex w-full h-full relative">
+                <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+                <div className="flex-1 flex flex-col h-screen overflow-hidden bg-[#f4f7fe] dark:bg-slate-900 w-full min-w-0">
+                  <Navbar onMenuClick={() => setIsSidebarOpen(true)} />
+                  <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-8">
                     <Routes>
                       <Route path="/" element={<Dashboard />} />
                       <Route path="/board/:id" element={<BoardView />} />
+                      <Route path="/tasks" element={<GlobalTasks />} />
+                      <Route path="/calendar" element={<CalendarView />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </main>
