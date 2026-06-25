@@ -38,7 +38,7 @@ function App() {
           
           <Route path="/*" element={
             <ProtectedRoute>
-              <div className="flex w-full h-full relative">
+              <div className="flex w-full h-full">
                 <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
                 <div className="flex-1 flex flex-col h-screen overflow-hidden bg-[#f4f7fe] dark:bg-slate-900 w-full min-w-0">
                   <Navbar onMenuClick={() => setIsSidebarOpen(true)} />

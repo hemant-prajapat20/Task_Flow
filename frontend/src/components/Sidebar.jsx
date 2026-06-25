@@ -40,7 +40,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       )}
 
       {/* Sidebar Content */}
-      <aside className={`absolute inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'} w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen flex flex-col shrink-0`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen flex flex-col shrink-0 transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
         {/* Logo Area */}
       <div className="h-20 flex items-center px-8 border-b border-transparent">
         <Link to="/" className="flex items-center gap-2.5">

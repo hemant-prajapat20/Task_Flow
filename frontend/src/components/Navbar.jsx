@@ -68,10 +68,10 @@ const Navbar = ({ onMenuClick }) => {
   }, [searchQuery]);
 
   return (
-    <header className="h-20 bg-transparent border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 flex items-center justify-between shrink-0 gap-4">
+    <header className="bg-transparent border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 py-3 sm:py-0 sm:h-20 flex flex-wrap items-center justify-between shrink-0 gap-y-3 gap-x-4">
       
       {/* Left Section */}
-      <div className="flex items-center gap-4 lg:gap-6 w-auto lg:w-1/3">
+      <div className="order-1 flex items-center gap-4 lg:gap-6 w-auto lg:w-1/3">
         <button 
           onClick={onMenuClick}
           className="lg:hidden p-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-indigo-600 transition-colors"
@@ -86,7 +86,7 @@ const Navbar = ({ onMenuClick }) => {
       </div>
 
       {/* Center Section: Global Search */}
-      <div className="hidden md:flex flex-1 justify-center w-full lg:w-1/3 relative px-2 sm:px-4" ref={searchRef}>
+      <div className="order-3 sm:order-2 flex-1 flex justify-center w-full min-w-full sm:min-w-0 lg:w-1/3 relative px-1 sm:px-4" ref={searchRef}>
         <div className="relative w-full max-w-md xl:max-w-lg z-50">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             {isSearching ? (
@@ -101,13 +101,9 @@ const Navbar = ({ onMenuClick }) => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => { if (searchQuery.trim().length > 0) setShowDropdown(true); }}
-            className={`w-full pl-10 pr-12 py-2.5 bg-white dark:bg-slate-800 border ${showDropdown ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-slate-200 dark:border-slate-700'} rounded-full text-sm outline-none transition-all shadow-sm`}
+            className={`w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border ${showDropdown ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-slate-200 dark:border-slate-700'} rounded-full text-sm outline-none transition-all shadow-sm`}
             placeholder="Search tasks, boards, and projects..."
           />
-          
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-            <span className="text-[10px] font-semibold text-slate-400 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">⌘K</span>
-          </div>
 
           {/* Search Results Dropdown Menu */}
           {showDropdown && (
@@ -175,7 +171,7 @@ const Navbar = ({ onMenuClick }) => {
       </div>
 
       {/* Right Section: Theme & Avatar */}
-      <div className="flex items-center justify-end gap-3 sm:gap-6 w-auto lg:w-1/3">
+      <div className="order-2 sm:order-3 flex items-center justify-end gap-3 sm:gap-6 w-auto lg:w-1/3">
         <button 
           onClick={toggleTheme}
           className="p-2 sm:p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 shadow-sm transition-colors"

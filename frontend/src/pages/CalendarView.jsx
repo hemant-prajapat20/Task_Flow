@@ -105,33 +105,33 @@ const CalendarView = () => {
   return (
     <div className="max-w-6xl mx-auto w-full h-full flex flex-col">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl">
-            <CalendarIcon className="h-6 w-6" />
+      <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-6 shadow-sm border border-slate-200 dark:border-slate-800 shrink-0 gap-4 sm:gap-0">
+        <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+          <div className="p-2.5 sm:p-3 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl shrink-0">
+            <CalendarIcon className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Project Calendar</h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Timezone: Indian Standard Time (IST)</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Project Calendar</h1>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Timezone: Indian Standard Time (IST)</p>
           </div>
         </div>
         
-        <div className="flex items-center gap-4">
-          <button onClick={prevMonth} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+        <div className="flex items-center justify-between w-full sm:w-auto gap-2 sm:gap-4 bg-slate-50 dark:bg-slate-800/50 sm:bg-transparent p-2 sm:p-0 rounded-2xl sm:rounded-none">
+          <button onClick={prevMonth} className="p-2 hover:bg-white dark:hover:bg-slate-700 sm:hover:bg-slate-100 dark:sm:hover:bg-slate-800 rounded-xl transition-colors shadow-sm sm:shadow-none">
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <h2 className="text-xl font-bold w-40 text-center text-slate-900 dark:text-white">
+          <h2 className="text-lg sm:text-xl font-bold w-32 sm:w-40 text-center text-slate-900 dark:text-white">
             {monthNames[month]} {year}
           </h2>
-          <button onClick={nextMonth} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+          <button onClick={nextMonth} className="p-2 hover:bg-white dark:hover:bg-slate-700 sm:hover:bg-slate-100 dark:sm:hover:bg-slate-800 rounded-xl transition-colors shadow-sm sm:shadow-none">
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>
       </div>
 
-      {/* Calendar Grid Container with Horizontal Scroll for Mobile */}
-      <div className="flex-1 bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-x-auto flex flex-col">
-        <div className="min-w-[800px] flex flex-col h-full">
+      {/* Calendar Grid Container */}
+      <div className="flex-1 bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col">
+        <div className="flex flex-col h-full w-full">
           {/* Days Header */}
           <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20 shrink-0">
           {days.map(day => (
