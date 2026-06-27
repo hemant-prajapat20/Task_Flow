@@ -4,11 +4,6 @@ TaskFlow is a modern, full-stack Kanban-style project management application bui
 
 ## 📸 Screenshots
 
-*To display your application screenshots here, follow these simple steps:*
-1. *Create a new folder named `screenshots` in the root directory of this project.*
-2. *Take screenshots of your app and name them exactly as shown below (e.g., `login.png`, `dashboard.png`).*
-3. *Place those images inside the `screenshots` folder. When you push to GitHub, they will automatically appear below!*
-
 ### Login & Authentication
 ![Login Page](./screenshots/login.png)
 
@@ -112,11 +107,11 @@ GEMINI_API_KEY=your_google_gemini_api_key_here
 
 ## 🌍 Live Demo & Test Credentials
 - **Frontend URL:** (https://task-flow-theta-seven.vercel.app/)
-- **Backend URL:** (https://task-flow-ldhn.onrender.com/api)
+- **Backend URL:** (https://task-flow-ldhn.onrender.com)
 
 **Test Account:**
-- **Email:** `test@example.com`
-- **Password:** `password123`
+- **Email:** `hp@gmail.com`
+- **Password:** `123456`
 
 ## ⚠️ Known Issues & Future Improvements
 **Limitations:**
