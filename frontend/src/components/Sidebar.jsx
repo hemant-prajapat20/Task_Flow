@@ -1,12 +1,11 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Columns, CheckSquare, Calendar, BarChart2, Users, Settings, LogOut, CheckCircle2, Sparkles, ChevronDown } from 'lucide-react';
+import { LayoutDashboard, Columns, CheckSquare, Calendar, BarChart2, Users, Settings, LogOut, CheckCircle2, Sparkles, ChevronDown, Layout } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-
   const location = useLocation();
 
   const handleLogout = () => {
@@ -21,6 +20,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const navLinks = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
+    { name: 'All Boards', icon: Layout, path: '/boards' },
     { name: 'Tasks', icon: CheckSquare, path: '/tasks' },
     { name: 'Calendar', icon: Calendar, path: '/calendar' },
   ];
@@ -72,8 +72,6 @@ const Sidebar = ({ isOpen, onClose }) => {
           );
         })}
       </nav>
-
-
 
       {/* User Profile & Logout */}
       <div className="p-4 border-t border-slate-200 dark:border-slate-800">

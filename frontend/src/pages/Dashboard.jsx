@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
-import { Plus, Layout, Trash2, Edit2, X, Search, ChevronDown, Grid, List as ListIcon, MoreVertical, Briefcase, Rocket, Lightbulb, Clock, CheckCircle2, TrendingUp, CheckSquare, Sparkles } from 'lucide-react';
+import { Plus, Layout, Trash2, Edit2, X, Search, ChevronDown, Grid, List as ListIcon, MoreVertical, Briefcase, Rocket, Lightbulb, Clock, CheckCircle2, TrendingUp, CheckSquare, Sparkles, AlertCircle, Flag } from 'lucide-react';
 
 const Dashboard = () => {
   const [boards, setBoards] = useState([]);
@@ -51,6 +51,27 @@ const Dashboard = () => {
   const todoPercentage = totalTasks ? Math.round((todoTasks / totalTasks) * 100) : 0;
   const inProgressPercentage = totalTasks ? Math.round((inProgressTasks / totalTasks) * 100) : 0;
   const completedPercentage = totalTasks ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  // Priority Stats
+  const highPriorityTasks = tasks.filter(t => t.priority === 'high').length;
+  const mediumPriorityTasks = tasks.filter(t => t.priority === 'medium').length;
+  const lowPriorityTasks = tasks.filter(t => t.priority === 'low').length;
+  const highPercentage = totalTasks ? Math.round((highPriorityTasks / totalTasks) * 100) : 0;
+  const mediumPercentage = totalTasks ? Math.round((mediumPriorityTasks / totalTasks) * 100) : 0;
+  const lowPercentage = totalTasks ? Math.round((lowPriorityTasks / totalTasks) * 100) : 0;
+
+  // Overdue Stats
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const overdueTasksCount = tasks.filter(t => {
+    if (!t.dueDate || t.status === 'done') return false;
+    const dueDate = new Date(t.dueDate);
+    return dueDate < today;
+  }).length;
+  const activeTasksCount = totalTasks - completedTasks;
+  const overduePercentage = activeTasksCount ? Math.round((overdueTasksCount / activeTasksCount) * 100) : 0;
+  const onTrackPercentage = activeTasksCount ? 100 - overduePercentage : 0;
+  const onTrackTasksCount = activeTasksCount - overdueTasksCount;
 
   const boardsWithStats = boards.map(board => {
     // Some tasks might have board as an object, others as an ID string depending on population
@@ -286,6 +307,94 @@ const Dashboard = () => {
                   </div>
                 ))
               )}
+            </div>
+          </div>
+          
+          {/* Priority Breakdown Chart (Horizontal Stacked Bar) */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Flag className="h-5 w-5 text-indigo-500" /> Priority Distribution
+              </h3>
+              <span className="text-sm font-medium text-slate-500">{totalTasks} Total</span>
+            </div>
+            
+            {/* The Stacked Bar */}
+            <div className="h-6 w-full flex rounded-full overflow-hidden mb-6 bg-slate-100 dark:bg-slate-700">
+              {totalTasks === 0 ? (
+                <div className="w-full h-full bg-slate-200 dark:bg-slate-700"></div>
+              ) : (
+                <>
+                  <div style={{ width: `${highPercentage}%` }} className="bg-red-500 hover:opacity-90 transition-opacity cursor-pointer relative group"></div>
+                  <div style={{ width: `${mediumPercentage}%` }} className="bg-orange-400 hover:opacity-90 transition-opacity cursor-pointer"></div>
+                  <div style={{ width: `${lowPercentage}%` }} className="bg-slate-400 dark:bg-slate-500 hover:opacity-90 transition-opacity cursor-pointer"></div>
+                </>
+              )}
+            </div>
+            
+            {/* Legend */}
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div>
+                <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></div> <span className="truncate">High</span>
+                </div>
+                <div className="text-xl font-bold text-slate-900 dark:text-white">{highPercentage}%</div>
+                <div className="text-xs text-slate-400">{highPriorityTasks} tasks</div>
+              </div>
+              <div>
+                <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <div className="w-2.5 h-2.5 rounded-full bg-orange-400 shrink-0"></div> <span className="truncate">Medium</span>
+                </div>
+                <div className="text-xl font-bold text-slate-900 dark:text-white">{mediumPercentage}%</div>
+                <div className="text-xs text-slate-400">{mediumPriorityTasks} tasks</div>
+              </div>
+              <div>
+                <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <div className="w-2.5 h-2.5 rounded-full bg-slate-400 dark:bg-slate-500 shrink-0"></div> <span className="truncate">Low</span>
+                </div>
+                <div className="text-xl font-bold text-slate-900 dark:text-white">{lowPercentage}%</div>
+                <div className="text-xs text-slate-400">{lowPriorityTasks} tasks</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Overdue Tracker Chart (Horizontal Stacked Bar) */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-center">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-red-500" /> Timeline Status
+              </h3>
+              <span className="text-sm font-medium text-slate-500">{activeTasksCount} Active</span>
+            </div>
+            
+            {/* The Stacked Bar */}
+            <div className="h-6 w-full flex rounded-full overflow-hidden mb-6 bg-slate-100 dark:bg-slate-700">
+              {activeTasksCount === 0 ? (
+                <div className="w-full h-full bg-slate-200 dark:bg-slate-700"></div>
+              ) : (
+                <>
+                  <div style={{ width: `${overduePercentage}%` }} className="bg-red-500 hover:opacity-90 transition-opacity cursor-pointer relative group"></div>
+                  <div style={{ width: `${onTrackPercentage}%` }} className="bg-emerald-500 hover:opacity-90 transition-opacity cursor-pointer"></div>
+                </>
+              )}
+            </div>
+            
+            {/* Legend */}
+            <div className="grid grid-cols-2 gap-2 text-center">
+              <div>
+                <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></div> <span className="truncate">Overdue</span>
+                </div>
+                <div className="text-xl font-bold text-slate-900 dark:text-white">{overduePercentage}%</div>
+                <div className="text-xs text-slate-400">{overdueTasksCount} tasks</div>
+              </div>
+              <div>
+                <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></div> <span className="truncate">On Track</span>
+                </div>
+                <div className="text-xl font-bold text-slate-900 dark:text-white">{onTrackPercentage}%</div>
+                <div className="text-xs text-slate-400">{onTrackTasksCount} tasks</div>
+              </div>
             </div>
           </div>
           

@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import BoardView from './pages/BoardView';
 import GlobalTasks from './pages/GlobalTasks';
 import CalendarView from './pages/CalendarView';
+import AllBoards from './pages/AllBoards';
 import NotFound from './pages/NotFound';
 import Sidebar from './components/Sidebar';
 
@@ -45,6 +46,7 @@ function App() {
                   <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-8">
                     <Routes>
                       <Route path="/" element={<Dashboard />} />
+                      <Route path="/boards" element={<AllBoards />} />
                       <Route path="/board/:id" element={<BoardView />} />
                       <Route path="/tasks" element={<GlobalTasks />} />
                       <Route path="/calendar" element={<CalendarView />} />
