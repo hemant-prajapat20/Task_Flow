@@ -3,11 +3,23 @@
 TaskFlow is a modern, full-stack Kanban-style project management application built with the **MERN** stack (MongoDB, Express, React, Node.js). It is designed to help individuals and teams organize tasks, manage projects efficiently, and boost productivity using built-in AI estimation features.
 
 ## 📸 Screenshots
-*(Note: Add your actual screenshots to a `screenshots` folder in the root directory)*
-- **Login Page:** ![Login Page](./screenshots/login.png)
-- **Dashboard:** ![Dashboard](./screenshots/dashboard.png)
-- **Board View (Kanban):** ![Board View](./screenshots/board-view.png)
-- **Mobile View:** ![Mobile View](./screenshots/mobile-view.png)
+
+*To display your application screenshots here, follow these simple steps:*
+1. *Create a new folder named `screenshots` in the root directory of this project.*
+2. *Take screenshots of your app and name them exactly as shown below (e.g., `login.png`, `dashboard.png`).*
+3. *Place those images inside the `screenshots` folder. When you push to GitHub, they will automatically appear below!*
+
+### Login & Authentication
+![Login Page](./screenshots/login.png)
+
+### Main Dashboard & Analytics
+![Dashboard](./screenshots/dashboard.png)
+
+### Kanban Board View (Drag & Drop)
+![Board View](./screenshots/board-view.png)
+
+### Responsive Mobile View
+![Mobile View](./screenshots/mobile-view.png)
 
 ## 🛠️ Technology Stack
 **Frontend:**
