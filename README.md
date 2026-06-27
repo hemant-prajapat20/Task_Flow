@@ -1,6 +1,14 @@
 # TaskFlow - Project Management Dashboard 🚀
 
-TaskFlow is a modern, full-stack Kanban-style project management application built with the **MERN** stack (MongoDB, Express, React, Node.js). It is designed to help individuals and teams organize tasks, manage projects efficiently, and boost productivity using built-in AI estimation features.
+TaskFlow is a modern, full-stack project management application built with the MERN stack (MongoDB, Express, React, Node.js) designed to streamline team productivity. It features a responsive, beautifully crafted dashboard utilizing Tailwind CSS that allows users to organize projects, track deadlines, and manage tasks through an intuitive drag-and-drop Kanban board. A standout feature is the integration of the Google Gemini AI API, which acts as a virtual project manager—automatically analyzing task titles and descriptions to generate accurate effort estimations and logical due dates. Secure JWT authentication, robust global search, and dynamic analytics charts complete this powerful productivity tool.
+
+## 🌍 Live Demo & Test Credentials
+- **Frontend URL:** (https://task-flow-theta-seven.vercel.app/)
+- **Backend URL:** (https://task-flow-ldhn.onrender.com)
+
+**Test Account:**
+- **Email:** `hp@gmail.com`
+- **Password:** `123456`
 
 ## 📸 Screenshots
 
@@ -34,10 +42,24 @@ TaskFlow is a modern, full-stack Kanban-style project management application bui
 
 ## 🤖 AI Integration (Google Gemini)
 **Which LLM API was chosen and why?**
-TaskFlow utilizes the **Google Gemini API** (`@google/genai`) for its AI features. Gemini was chosen because it offers incredibly fast response times, exceptional natural language comprehension, and a very generous free tier for developers, making it perfect for rapid text-based analysis.
+For TaskFlow, we chose to integrate the Google Gemini API (specifically the gemini-2.5-flash model via the @google/genai SDK) instead of alternatives like OpenAI's ChatGPT or Anthropic's Claude.
+
+**Why Gemini**?
+
+Speed and Efficiency (Flash Model): Task management requires a snappy user interface. The gemini-2.5-flash model is heavily optimized for low latency. When a user clicks "Generate AI Estimate", they expect near-instant feedback to keep their workflow moving. Gemini delivers this JSON payload exceptionally fast.
+Generous Free Tier for Development: For a portfolio or assignment project, managing API costs is crucial. Google currently offers a very generous free tier for the Gemini API, making it the perfect choice for an independent developer to build, test, and host the application without incurring unexpected cloud costs.
+Structured JSON Output Support: A major requirement for this project was having the AI return predictable, machine-readable data (specifically an "estimated effort" and a "due date") rather than conversational text. The Gemini API handles system instructions and structured JSON generation flawlessly..
 
 **How the AI feature works:**
-When creating or editing a task, users can click the "Generate AI Estimate" button. The frontend sends the task's `title` and `description` to the backend `/api/ai/estimate` route. The backend securely communicates with the Gemini model, prompting it to act as a senior project manager. Gemini analyzes the task complexity and returns a structured JSON response containing an estimated time effort (e.g., "3 hours") and a logical due date offset, which automatically populates the user's form.
+The AI feature in TaskFlow is designed to act as a "virtual project manager" that analyzes a task and predicts how much effort it will take and when it should reasonably be completed. Here is the exact technical flow:
+
+Step 1: The User Request (Frontend) When a user is creating or editing a task inside a project board, they enter a Title (e.g., "Implement JWT Auth") and a Description. Instead of manually guessing the due date, they click the "✨ Generate AI Estimate" button. The React frontend immediately takes the title and description and sends an HTTP POST request to our secure backend route (/api/ai/estimate).
+
+Step 2: The Secure Backend Prompt (Node.js/Express) For security reasons, the frontend never talks to the AI directly. Our Node.js backend catches the request. It securely retrieves the hidden GEMINI_API_KEY from the .env file and constructs a highly specific "System Prompt". The backend instructs Gemini: "Act as a senior software project manager. Analyze the provided task title and description. Respond ONLY with a valid JSON object containing exactly two keys: estimatedEffort (a string like '3 hours' or '2 days') and dueDateOffset (an integer representing the number of days from today the task should take)."
+
+Step 3: AI Processing & Response The backend sends this prompt, along with the user's task details, to the Google Gemini model. Gemini analyzes the complexity of the text. For example, it recognizes that "Fix button color" is a 1-day task, while "Build payment gateway" is a 7-day task. It returns the raw JSON string.
+
+Step 4: Parsing and UI Update (Frontend) The backend parses the AI's JSON response and sends it back to the React frontend. The frontend does the final math: it takes the dueDateOffset (e.g., 3 days), adds it to today's date to create an actual calendar dueDate, and then automatically fills in the Due Date and Description form fields for the user. The user can then review the AI's estimation and save the task!
 
 ## 🚀 Getting Started Locally
 
@@ -105,13 +127,6 @@ GEMINI_API_KEY=your_google_gemini_api_key_here
 | **POST** | `/api/ai/estimate` | Send task details to Gemini API for effort estimation |
 | **GET** | `/api/search` | Globally search tasks and boards by query string |
 
-## 🌍 Live Demo & Test Credentials
-- **Frontend URL:** (https://task-flow-theta-seven.vercel.app/)
-- **Backend URL:** (https://task-flow-ldhn.onrender.com)
-
-**Test Account:**
-- **Email:** `hp@gmail.com`
-- **Password:** `123456`
 
 ## ⚠️ Known Issues & Future Improvements
 **Limitations:**
